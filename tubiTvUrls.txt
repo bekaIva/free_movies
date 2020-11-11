@@ -1,0 +1,29 @@
+https://uapi.adrise.tv/user_device/config/android?device_id=4c04399d-9a2e-4ff0-94e3-cf8481e1956b
+
+//all
+https://uapi.adrise.tv/matrix/homescreen?includeEmptyQueue=true&limit=40&expand=2&includeVideoInGrid=false&groupStart=5&groupSize=-1&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+//tv
+https://uapi.adrise.tv/matrix/homescreen?includeEmptyQueue=true&limit=40&expand=2&includeVideoInGrid=false&groupStart=5&groupSize=-1&contentMode=tv&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+//movie
+https://uapi.adrise.tv/matrix/homescreen?includeEmptyQueue=true&limit=40&expand=2&includeVideoInGrid=false&groupStart=5&groupSize=-1&contentMode=movie&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+https://uapi.adrise.tv/cms/content?content_id=556591&video_resources=hlsv6_widevine&video_resources=hlsv3&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+
+https://uapi.adrise.tv/cms/content/556591/related?video_resources=hlsv6_widevine&video_resources=hlsv3&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+
+//search
+https://uapi.adrise.tv/cms/search?search=terminator%20genesis&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+//recently added
+https://uapi.adrise.tv/matrix/containers/recently_added?limit=40&cursor=40&expand=1&includeVideoInGrid=false&contentMode=movie&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+
+//recently added page2
+https://uapi.adrise.tv/matrix/containers/recently_added?limit=40&cursor=80&expand=1&includeVideoInGrid=false&contentMode=movie&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+//by Genre
+https://uapi.adrise.tv/matrix/containers/comedy?limit=40&expand=1&includeVideoInGrid=false&contentMode=movie&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
