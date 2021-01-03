@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "361586058631",
+    "project_id": "free-movies-b6b4f",
+    "storage_bucket": "free-movies-b6b4f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361586058631:android:e837f239ac3c0578041f22",
+        "android_client_info": {
+          "package_name": "com.bsoft.free_movies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361586058631-0afekb89122hlichhgarprrlcg3ktlgt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3TuCRtjBsIGBU-kp4o9aryi-GYe8cYI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361586058631-0afekb89122hlichhgarprrlcg3ktlgt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
