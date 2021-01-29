@@ -9,6 +9,7 @@ import 'package:free_movies/themes/themes.dart';
 
 import 'authentication/bloc/authentication_bloc.dart';
 import 'constants/Constants.dart';
+import 'home/bloc/search_bloc/search_bloc.dart';
 
 class MyApp extends StatelessWidget {
   final AuthenticationRepository authenticationRepository;
@@ -29,11 +30,17 @@ class MyApp extends StatelessWidget {
         ],
         child: RepositoryProvider<TubiApi>(
           create: (context) => TubiApi(context.read<GlobalSettingsBloc>()),
-          child: BlocProvider(
+          child: MultiBlocProvider(providers: [
+            BlocProvider(
+              create: (context) =>
+                  DatabaseUserBloc(context.read<AuthenticationBloc>()),
+              lazy: false,
+            ),
+            BlocProvider(
+              create: (context) => SearchBloc(context.read<TubiApi>()),
+            ),
+          ],
             child: MyAppView(),
-            create: (context) =>
-                DatabaseUserBloc(context.read<AuthenticationBloc>()),
-            lazy: false,
           ),
         ),
       ),

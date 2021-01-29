@@ -10,6 +10,8 @@ import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
 import 'package:free_movies/GlobalSettings/models/global_setting.dart';
 import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/bloc/home_page_bloc.dart';
+import 'package:free_movies/home/bloc/search_bloc/search_bloc.dart';
+import 'package:free_movies/home/view/SearchDelegate.dart';
 import 'package:free_movies/home/view/widgets/home_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -48,13 +50,20 @@ class _HomePageState extends State<HomePage> {
         AppBar appbar = AppBar(
           backgroundColor: kLigthBackgroundColor,
           title: Text(indexToAppbarName(bottomNavigationIndex)),
-          actions: [IconButton(icon: Icon(Icons.search), onPressed: () {})],
+          actions: [
+            IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  showSearch(context: context, delegate: HomeSearchDelegate(context.read<SearchBloc>()));
+                })
+          ],
         );
         return WillPopScope(
           onWillPop: () async {
             if (bottomNavigationIndex > 0) {
-              _pageController.animateToPage(bottomNavigationIndex - 1,
-                  duration: Duration(milliseconds: 200), curve: Curves.easeOut);
+              _pageController.jumpToPage(
+                bottomNavigationIndex - 1,
+              );
               return false;
             } else {}
             return true;
@@ -73,9 +82,9 @@ class _HomePageState extends State<HomePage> {
                 unselectedItemColor: kTitleColor,
                 currentIndex: bottomNavigationIndex,
                 onTap: (index) {
-                  _pageController.animateToPage(index,
-                      duration: Duration(milliseconds: 200),
-                      curve: Curves.easeOut);
+                  _pageController.jumpToPage(
+                    index,
+                  );
                 },
                 items: [
                   BottomNavigationBarItem(
@@ -96,10 +105,11 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               children: [
-                BlocProvider(
-                  create: (context) => HomePageBloc(context.read<TubiApi>()),
-                  child: HomeWidget(),
-                ),
+                MultiBlocProvider(providers: [
+                  BlocProvider(
+                    create: (context) => HomePageBloc(context.read<TubiApi>()),
+                  ),
+                ], child: HomeWidget()),
                 BlocProvider(
                   create: (context) => MoviesListBloc(context.read<TubiApi>()),
                   child: AllMoviesPage(),

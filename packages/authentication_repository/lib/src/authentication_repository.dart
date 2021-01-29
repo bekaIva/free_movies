@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'models.dart';
 
@@ -12,17 +15,22 @@ class LogInWithGoogleFailure implements Exception {}
 
 class LogOutFailure implements Exception {}
 
+
 class AuthenticationRepository {
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  PublishSubject<User> _subject = PublishSubject<User>();
   AuthenticationRepository(
       {firebase_auth.FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
       : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn.standard();
+        _googleSignIn = googleSignIn ?? GoogleSignIn.standard() {
+    firebase_auth.FirebaseAuth.instance.userChanges().listen((event) {
+      _subject.add(event == null ? User.empty : event.toUser);
+    });
 
-  Stream<User> get user => _firebaseAuth
-      .authStateChanges()
-      .map((fbUser) => fbUser == null ? User.empty : fbUser.toUser);
+  }
+
+  Stream<User> get user => _subject.stream;
 
   Future<User> signUp({
     @required String email,
@@ -45,6 +53,9 @@ class AuthenticationRepository {
   /// Throws a [LogInWithGoogleFailure] if an exception occurs.
   Future<void> logInWithGoogle() async {
     try {
+      try {
+        _firebaseAuth.signOut();
+      } catch (e) {}
       final googleUser = await _googleSignIn.signIn();
       final googleAuth = await googleUser.authentication;
       final credential = firebase_auth.GoogleAuthProvider.credential(
@@ -64,9 +75,12 @@ class AuthenticationRepository {
     @required String email,
     @required String password,
   }) async {
+    try {
+      _firebaseAuth.signOut();
+    } catch (e) {}
     assert(email != null && password != null);
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      var user = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -85,7 +99,7 @@ class AuthenticationRepository {
         _firebaseAuth.signOut(),
         _googleSignIn.signOut(),
       ]);
-    } on Exception {
+    } catch (e) {
       throw LogOutFailure();
     }
   }

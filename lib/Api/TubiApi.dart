@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_advertising_id/flutter_advertising_id.dart';
 import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
 import 'package:free_movies/home/model/home_response.dart' as homeResponse;
+import 'package:free_movies/home/model/home_response.dart';
 
 enum ContentMode { tv, movie, all }
 
@@ -72,6 +73,24 @@ class TubiApi {
   // page2
   // https://uapi.adrise.tv/matrix/containers/most_popular?limit=40&cursor=40&expand=1&includeVideoInGrid=false&contentMode=all&
   // // platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+  //search
+  //https://uapi.adrise.tv/cms/search?search=terminator%20genesis&platform=android&deviceId=4c04399d-9a2e-4ff0-94e3-cf8481e1956b&app_id=tubitv
+
+  Future<List<Content>> search(String query)async
+  {
+    var params = {
+      'search': query,
+      'platform': platform,
+      'deviceId': deviceId,
+      'app_id': appId
+    };
+    String url = '$baseUrl/cms/search';
+    var res = await _dio.get(url,queryParameters: params,options: Options(headers: {'': 'application/json'}));
+   var retVal = (res.data as List).map((e) => Content.fromJson(e)).toList();
+    return retVal;
+  }
+
   Future<homeResponse.SingleContainerResponse> loadContainer({
     @required homeResponse.Container container,
     int limit = 40,
