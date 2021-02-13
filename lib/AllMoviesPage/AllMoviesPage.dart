@@ -110,6 +110,7 @@ class _MoviesListState extends State<MoviesList>
   }
   @override
   Widget build(BuildContext context) {
+    super.build(context);
    return SmartRefresher(enablePullDown: true,
       onRefresh: () {
         _bloc.add(LoadEvent());

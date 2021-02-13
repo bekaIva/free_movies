@@ -27,7 +27,7 @@ dependencies:
   bloc:
   flutter_bloc:
   formz:
-  rxdart: ^0.24.1
+  rxdart:
   eva_icons_flutter: ^2.0.1
   flutter_rating_bar: ^3.0.1+1
   page_indicator: ^0.3.0
@@ -37,8 +37,6 @@ dependencies:
   firebase_core: ^0.5.0
   firebase_auth: ^0.18.0+1
   cloud_firestore: ^0.14.0+2
-  authentication_repository:
-    path: packages/authentication_repository
   equatable:
   provider:
   google_fonts:

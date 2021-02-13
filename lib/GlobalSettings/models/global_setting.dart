@@ -20,7 +20,7 @@ class GlobalSetting {
         baseUrl = json['baseUrl'],
         apId = json['apId'],
         platform = json['platform'],
-        update = Update.fromJson(json['update']);
+        update = Update.fromJson(json['update']??{});
 
   GlobalSetting.initial()
       : adsEnabled = false,

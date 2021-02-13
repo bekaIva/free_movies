@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:admob_flutter/admob_flutter.dart';
-import 'package:authentication_repository/authentication_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,9 +16,7 @@ void main() async {
   EquatableConfig.stringify = kDebugMode;
   Bloc.observer = MainBlocObserver();
   Admob.initialize();
-  runApp(MyApp(
-    authenticationRepository: AuthenticationRepository(),
-  ));
+  runApp(MyApp());
 }
 
 String getBannerAdUnitId() {

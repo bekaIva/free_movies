@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/bloc/search_bloc/search_bloc.dart';
+import 'package:free_movies/widgets/HorizontalMoviesList.dart';
 
 class HomeSearchDelegate extends SearchDelegate {
   SearchBloc _bloc;
@@ -31,27 +33,78 @@ class HomeSearchDelegate extends SearchDelegate {
   }
 
   @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      primaryColor: kLigthBackgroundColor,
+      textTheme: TextTheme(headline6: TextStyle(color: Colors.white)),
+      primaryIconTheme: IconThemeData(
+        color: Colors.white,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle:
+            Theme.of(context).textTheme.headline6.copyWith(color: Colors.white),
+      ),
+    );
+  }
+
+  @override
   Widget buildResults(BuildContext context) {
     _bloc.search(query);
-    return BlocBuilder<SearchBloc, SearchState>(cubit: _bloc,
-      builder: (context, state) {
-        if (state is EmptyState) {
-          return Text('Nothing to show');
-        }
-        if (state is LoadingState) {
-          return CircularProgressIndicator();
-        }
-        if (state is LoadedState) {
-          return Container();
-        }
-        return Text('error');
-      },
+    return Container(
+      color: kBackgroundColor,
+      child: BlocBuilder<SearchBloc, SearchState>(
+        cubit: _bloc,
+        builder: (context, state) {
+          if (state is EmptyState) {
+            return TextResult('Ntohing found');
+          }
+          if (state is LoadingState) {
+            return Center(
+                child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(kYelowTitleColor)));
+          }
+          if (state is LoadedState) {
+            return GridView.builder(
+              itemCount: state.results.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, childAspectRatio: .5),
+              itemBuilder: (context, index) {
+                return MovieWidget(
+                  movie: state.results[index],
+                  titleColor: Colors.white,
+                );
+              },
+            );
+          }
+          if (state is ErrorState) {
+            return TextResult('Error');
+          }
+          return TextResult('Nothing to show');
+        },
+      ),
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return Text('test');
+    return Container(
+      color: kBackgroundColor,
+    );
     // TODO: implement buildSuggestions
+  }
+}
+
+class TextResult extends StatelessWidget {
+  final String text;
+  TextResult(this.text);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white),
+      ),
+    );
   }
 }

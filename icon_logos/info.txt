@@ -1,0 +1,14 @@
+
+Hope you enjoy your new logo, here are the people that
+made your beautiful logo happen :)
+font name: Galada-Regular
+font link: https://fonts.google.com/specimen/Galada
+font author: Black Foundry
+font author site: https://black-foundry.com/
+Slogan Font: Neuton-Extralight.ttf
+
+icon designer: Milky - Digital innovation
+icon designer link: /Milky
+        
+{"bg-gradient-0":"#563F33","bg-gradient-1":"#A3A1A1","icon":"#ffffff","font":"#ffffff","slogan":"#ffffff"}
+      

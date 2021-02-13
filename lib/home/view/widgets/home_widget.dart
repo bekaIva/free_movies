@@ -39,76 +39,78 @@ class _HomeWidgetState extends State<HomeWidget>
     super.build(context);
     return BlocProvider.value(
         value: _bloc,
-        child: SmartRefresher(
-          onRefresh: () {
-            _bloc.add(Load());
-          },
-          controller: _refreshController,
-          child: SingleChildScrollView(
-            child: BlocBuilder<HomePageBloc, HomePageResponse>(
-              builder: (context, state) {
-                if (state.mainContentStatus != HomePageResponseStatus.loading &&
-                    state.secondaryContentStatus !=
-                        HomePageResponseStatus.loading &&
-                    _refreshController.isRefresh) {
-                  WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                    _refreshController.loadComplete();
-                    _refreshController.refreshCompleted();
-                  });
-                }
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (state.mainContentStatus ==
-                        HomePageResponseStatus.loading)
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(kHeaderYelowColor),
-                      ),
-                    if (state.mainContentStatus ==
-                        HomePageResponseStatus.loaded) ...[
-                      SliderMovies(
-                        response: state.mainContentResponse,
-                      ),
-                      ContainerGroupWidget(
-                        containers: Map.fromEntries(
-                          state.mainContentResponse.containers
-                              .skip(1)
-                              .toList()
-                              .map(
-                                (c) => MapEntry(
-                                  c,
-                                  c.children
-                                      .map((ch) => state
-                                          .mainContentResponse.contents[ch])
-                                      .toList(),
-                                ),
-                              ),
+        child: Theme(data: ThemeData(primarySwatch: Colors.brown),
+          child: SmartRefresher(
+            onRefresh: () {
+              _bloc.add(Load());
+            },
+            controller: _refreshController,
+            child: SingleChildScrollView(
+              child: BlocBuilder<HomePageBloc, HomePageResponse>(
+                builder: (context, state) {
+                  if (state.mainContentStatus != HomePageResponseStatus.loading &&
+                      state.secondaryContentStatus !=
+                          HomePageResponseStatus.loading &&
+                      _refreshController.isRefresh) {
+                    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                      _refreshController.loadComplete();
+                      _refreshController.refreshCompleted();
+                    });
+                  }
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (state.mainContentStatus ==
+                          HomePageResponseStatus.loading)
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(kHeaderYelowColor),
                         ),
-                      ),
-                    ],
-                    if (state.secondaryContentStatus ==
-                        HomePageResponseStatus.loading)
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(kHeaderYelowColor),
-                      ),
-                    if (state.secondaryContentStatus ==
-                        HomePageResponseStatus.loaded)
-                      ContainerGroupWidget(
-                        containers: Map.fromEntries(
-                          state.secondaryContentResponse.containers.map(
-                            (c) => MapEntry(
-                              c,
-                              c.children
-                                  .map((ch) => state
-                                      .secondaryContentResponse.contents[ch])
-                                  .toList(),
+                      if (state.mainContentStatus ==
+                          HomePageResponseStatus.loaded) ...[
+                        SliderMovies(
+                          response: state.mainContentResponse,
+                        ),
+                        ContainerGroupWidget(
+                          containers: Map.fromEntries(
+                            state.mainContentResponse.containers
+                                .skip(1)
+                                .toList()
+                                .map(
+                                  (c) => MapEntry(
+                                    c,
+                                    c.children
+                                        .map((ch) => state
+                                            .mainContentResponse.contents[ch])
+                                        .toList(),
+                                  ),
+                                ),
+                          ),
+                        ),
+                      ],
+                      if (state.secondaryContentStatus ==
+                          HomePageResponseStatus.loading)
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(kHeaderYelowColor),
+                        ),
+                      if (state.secondaryContentStatus ==
+                          HomePageResponseStatus.loaded)
+                        ContainerGroupWidget(
+                          containers: Map.fromEntries(
+                            state.secondaryContentResponse.containers.map(
+                              (c) => MapEntry(
+                                c,
+                                c.children
+                                    .map((ch) => state
+                                        .secondaryContentResponse.contents[ch])
+                                    .toList(),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ));
