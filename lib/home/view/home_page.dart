@@ -49,13 +49,20 @@ class _HomePageState extends State<HomePage> {
       builder: (context, state) {
         AppBar appbar = AppBar(
           backgroundColor: kLigthBackgroundColor,
-          title: Text(indexToAppbarName(bottomNavigationIndex)),
+          title: Text(
+            indexToAppbarName(bottomNavigationIndex),
+          ),
           actions: [
             IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () {
-                  showSearch(context: context, delegate: HomeSearchDelegate(context.read<SearchBloc>()));
-                })
+                  showSearch(
+                    context: context,
+                    delegate: HomeSearchDelegate(
+                      context.read<SearchBloc>(),
+                    ),
+                  );
+                }),
           ],
         );
         return WillPopScope(
@@ -97,7 +104,8 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            body: PageView(physics: NeverScrollableScrollPhysics(),
+            body: PageView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _pageController,
               onPageChanged: (value) {
                 setState(() {

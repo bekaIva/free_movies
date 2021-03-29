@@ -1,5 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bsoft.free_movies">
+
+
+    <!--                ca-app-pub-3909212246838265~9657790568 realId-->
+    <!--                ca-app-pub-3940256099942544~3347511713 testId-->
+
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:usesCleartextTraffic="true"
@@ -7,7 +12,7 @@
         android:icon="@mipmap/ic_launcher">
        <meta-data
            android:name="com.google.android.gms.ads.APPLICATION_ID"
-           android:value="ca-app-pub-3940256099942544~3347511713"/>
+           android:value="ca-app-pub-3909212246838265~9657790568"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -37,7 +37,7 @@ class _MyAppViewState extends State<MyAppView> {
   NavigatorState get _navigator => _navigatorKey.currentState;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp(debugShowCheckedModeBanner: false,
       home: HomePage(),
       navigatorKey: _navigatorKey,
     );
