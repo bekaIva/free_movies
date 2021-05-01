@@ -53,7 +53,7 @@ class HomeSearchDelegate extends SearchDelegate {
     return Container(
       color: kBackgroundColor,
       child: BlocBuilder<SearchBloc, SearchState>(
-        cubit: _bloc,
+        bloc: _bloc,
         builder: (context, state) {
           if (state is EmptyState) {
             return TextResult('Ntohing found');

@@ -5,6 +5,7 @@ import 'package:free_movies/Content/bloc/content_cubit.dart';
 import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
 import 'package:free_movies/GlobalSettings/models/global_setting.dart';
 import 'package:free_movies/Player/player_view.dart';
+import 'package:free_movies/blocs/interstitialBloc.dart';
 import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/model/home_response.dart' as response;
 import 'package:free_movies/main.dart';
@@ -24,7 +25,6 @@ class _ContentFormState extends State<ContentForm> {
   var seasonsPageController =
       PageController(keepPage: true, viewportFraction: .3, initialPage: 0);
   int selectedSeason;
-  AdmobInterstitial interstitialAd;
   ValueNotifier<AdmobAdEvent> admobEvemt =
       ValueNotifier<AdmobAdEvent>(AdmobAdEvent.closed);
   ContentCubit _cubit;
@@ -35,14 +35,11 @@ class _ContentFormState extends State<ContentForm> {
       _cubit.updateContent((_cubit.state as ContentInitial).content);
     }
     if (context.read<GlobalSettingsBloc>().state.adsEnabled) {
-      interstitialAd = AdmobInterstitial(
-        adUnitId: getInterstitialAdUnitId(),
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          if (event == AdmobAdEvent.closed) interstitialAd.load();
-          handleEvent(event, args, 'Interstitial');
-        },
-      );
-      interstitialAd.load();
+      if (context.read<InterstitialBloc>().state is AdLoaded) {
+        context.read<InterstitialBloc>().showAd();
+      }
+
+      //todo show interstitial
     }
     // TODO: implement initState
     super.initState();
@@ -145,7 +142,8 @@ class _ContentFormState extends State<ContentForm> {
                             state.content.type == 's' &&
                             (state.content.children?.length ?? 0) > 0)
                           SliverToBoxAdapter(
-                            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 SizedBox(
@@ -160,20 +158,24 @@ class _ContentFormState extends State<ContentForm> {
                                             selectedSeason = index;
                                           });
                                         },
-                                        itemCount: state.content.children.length,
+                                        itemCount:
+                                            state.content.children.length,
                                         controller: seasonsPageController,
                                         physics: ClampingScrollPhysics(),
                                         scrollDirection: Axis.horizontal,
                                         itemBuilder: (context, index) {
                                           return ChildWidget(
                                               onTap: () {
-                                                if(index!=selectedSeason&&index==seasonsPageController.page.toInt())
-                                                  {
-                                                    setState(() {
-                                                      selectedSeason=index;
-                                                    });
-                                                    return;
-                                                  }
+                                                if (index != selectedSeason &&
+                                                    index ==
+                                                        seasonsPageController
+                                                            .page
+                                                            .toInt()) {
+                                                  setState(() {
+                                                    selectedSeason = index;
+                                                  });
+                                                  return;
+                                                }
 
                                                 seasonsPageController
                                                     .animateToPage(index,
@@ -195,13 +197,17 @@ class _ContentFormState extends State<ContentForm> {
                                         0)
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    child: Row(mainAxisAlignment: MainAxisAlignment.start,mainAxisSize: MainAxisSize.min,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
                                       children: state.content
                                           .children[selectedSeason].children
-                                          .map((e) => Flexible(child: MovieWidget(
-                                        movie: e,
-                                        titleColor: kHeaderColor,
-                                      )))
+                                          .map((e) => Flexible(
+                                                  child: MovieWidget(
+                                                movie: e,
+                                                titleColor: kHeaderColor,
+                                              )))
                                           .toList(),
                                     ),
                                   ),
@@ -357,31 +363,6 @@ class _ContentFormState extends State<ContentForm> {
         );
       },
     );
-  }
-
-  void handleEvent(
-      AdmobAdEvent event, Map<String, dynamic> args, String adType) {
-    switch (event) {
-      case AdmobAdEvent.loaded:
-        {
-          if (!adShown) {
-            {
-              interstitialAd.show();
-            }
-          }
-        }
-        break;
-      case AdmobAdEvent.opened:
-        adShown = true;
-        break;
-      case AdmobAdEvent.closed:
-        print('Admob $adType Ad closed!');
-        break;
-      case AdmobAdEvent.failedToLoad:
-        print('Admob $adType failed to load. :(');
-        break;
-      default:
-    }
   }
 
   FloatingActionButton errorWidgetBuilder(response.Content content) {

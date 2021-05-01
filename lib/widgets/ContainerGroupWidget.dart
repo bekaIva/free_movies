@@ -5,7 +5,6 @@ import 'package:free_movies/home/model/home_response.dart' as resopnse;
 
 import 'HorizontalMoviesList.dart';
 
-
 class ContainerGroupWidget extends StatefulWidget {
   final Map<resopnse.Container, List<resopnse.Content>> containers;
   ContainerGroupWidget({this.containers});
@@ -41,29 +40,34 @@ class _ContainerGroupWidgetState extends State<ContainerGroupWidget>
           backgroundColor: kBackgroundColor,
           appBar: PreferredSize(
             child: AppBar(
-              backgroundColor: kBackgroundColor,
-              bottom: PreferredSize(child: Container(width: double.infinity,child: TabBar(
-                indicatorColor: kHeaderYelowColor,
-                controller: _tabController,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorWeight: 3,
-                unselectedLabelColor: kTitleColor,
-                labelColor: Colors.white,
-                isScrollable: true,
-                tabs: widget.containers.entries
-                    .map(
-                      (container) => Container(
-                    padding: EdgeInsets.only(bottom: 15, top: 10),
-                    child: Text(
-                      container.key.title,
-                      style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                )
-                    .toList(),
-              ),))
-            ),
+                backgroundColor: kBackgroundColor,
+                bottom: PreferredSize(
+                    preferredSize: Size.fromHeight(0),
+                    child: Container(
+                      width: double.infinity,
+                      child: TabBar(
+                        indicatorColor: kHeaderYelowColor,
+                        controller: _tabController,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        indicatorWeight: 3,
+                        unselectedLabelColor: kTitleColor,
+                        labelColor: Colors.white,
+                        isScrollable: true,
+                        tabs: widget.containers.entries
+                            .map(
+                              (container) => Container(
+                                padding: EdgeInsets.only(bottom: 15, top: 10),
+                                child: Text(
+                                  container.key.title,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    ))),
             preferredSize: Size.fromHeight(50),
           ),
           body: TabBarView(
@@ -71,11 +75,11 @@ class _ContainerGroupWidgetState extends State<ContainerGroupWidget>
             physics: NeverScrollableScrollPhysics(),
             children: widget.containers.entries
                 .map((e) => HorizontalMoviesList(
-              onMoreTap: () {
-                Navigator.of(context).push(ContainerPage.route(e.key));
-              },
-              movies: e.value,
-            ))
+                      onMoreTap: () {
+                        Navigator.of(context).push(ContainerPage.route(e.key));
+                      },
+                      movies: e.value,
+                    ))
                 .toList(),
           ),
         ),

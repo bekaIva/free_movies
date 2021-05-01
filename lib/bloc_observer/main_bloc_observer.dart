@@ -2,20 +2,13 @@ import 'package:bloc/bloc.dart';
 
 class MainBlocObserver extends BlocObserver {
   @override
-  void onCreate(Cubit cubit) {}
+  void onCreate(BlocBase bloc) {
+    // TODO: implement onCreate
+    super.onCreate(bloc);
+  }
 
   @override
-  void onClose(Cubit cubit) {}
-
-  @override
-  void onError(Cubit cubit, Object error, StackTrace stackTrace) {}
-
-  @override
-  void onTransition(Bloc bloc, Transition transition) {}
-
-  @override
-  void onChange(Cubit cubit, Change change) {}
-
-  @override
-  void onEvent(Bloc bloc, Object event) {}
+  void onClose(BlocBase bloc) {
+    super.onClose(bloc);
+  }
 }
