@@ -5,7 +5,6 @@ import 'package:free_movies/Content/bloc/content_cubit.dart';
 import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
 import 'package:free_movies/GlobalSettings/models/global_setting.dart';
 import 'package:free_movies/Player/player_view.dart';
-import 'package:free_movies/blocs/interstitialBloc.dart';
 import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/model/home_response.dart' as response;
 import 'package:free_movies/main.dart';
@@ -34,13 +33,13 @@ class _ContentFormState extends State<ContentForm> {
     if (_cubit.state is ContentInitial) {
       _cubit.updateContent((_cubit.state as ContentInitial).content);
     }
-    if (context.read<GlobalSettingsBloc>().state.adsEnabled) {
-      if (context.read<InterstitialBloc>().state is AdLoaded) {
-        context.read<InterstitialBloc>().showAd();
-      }
-
-      //todo show interstitial
-    }
+    // if (context.read<GlobalSettingsBloc>().state.adsEnabled) {
+    //   if (context.read<InterstitialBloc>().state is AdLoaded) {
+    //     context.read<InterstitialBloc>().showAd();
+    //   }
+    //
+    //   //todo show interstitial
+    // }
     // TODO: implement initState
     super.initState();
   }

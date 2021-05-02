@@ -1,9 +1,11 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:free_movies/Content/view/content_page.dart';
+import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
+import 'package:free_movies/blocs/interstitialBloc.dart';
 import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/model/home_response.dart' as response;
-import 'package:page_indicator/page_indicator.dart';
+import 'package:provider/provider.dart';
 
 class MovieWidget extends StatefulWidget {
   final Color titleColor;
@@ -138,7 +140,20 @@ class _MovieWidgetState extends State<MovieWidget> {
                             splashColor: Colors.black.withOpacity(.1),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
-                            onPressed: () {
+                            onPressed: () async {
+                              if (context
+                                  .read<GlobalSettingsBloc>()
+                                  .state
+                                  .adsEnabled) {
+                                if (context.read<InterstitialBloc>().state
+                                    is AdLoaded) {
+                                  await context
+                                      .read<InterstitialBloc>()
+                                      .showAd();
+                                }
+
+                                //todo show interstitial
+                              }
                               Navigator.of(context)
                                   .push(ContentPage.route(widget.movie));
                             },
