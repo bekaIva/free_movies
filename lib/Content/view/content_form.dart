@@ -1,10 +1,10 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:free_movies/Content/bloc/content_cubit.dart';
 import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
 import 'package:free_movies/GlobalSettings/models/global_setting.dart';
 import 'package:free_movies/Player/player_view.dart';
+import 'package:free_movies/blocs/interstitialBloc.dart';
 import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/model/home_response.dart' as response;
 import 'package:free_movies/main.dart';
@@ -12,6 +12,7 @@ import 'package:free_movies/widgets/ChildWidget.dart';
 import 'package:free_movies/widgets/HorizontalMoviesList.dart';
 import 'package:free_movies/widgets/casts.dart';
 import 'package:free_movies/widgets/movie_info.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:sliver_fab/sliver_fab.dart';
 
 class ContentForm extends StatefulWidget {
@@ -20,15 +21,19 @@ class ContentForm extends StatefulWidget {
 }
 
 class _ContentFormState extends State<ContentForm> {
-  bool adShown = false;
   var seasonsPageController =
       PageController(keepPage: true, viewportFraction: .3, initialPage: 0);
   int selectedSeason;
-  ValueNotifier<AdmobAdEvent> admobEvemt =
-      ValueNotifier<AdmobAdEvent>(AdmobAdEvent.closed);
   ContentCubit _cubit;
+  final BannerAd myBanner = BannerAd(
+    adUnitId: getBannerAdUnitId(),
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
   @override
   void initState() {
+    myBanner.load();
     _cubit = context.read<ContentCubit>();
     if (_cubit.state is ContentInitial) {
       _cubit.updateContent((_cubit.state as ContentInitial).content);
@@ -45,6 +50,13 @@ class _ContentFormState extends State<ContentForm> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    myBanner.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<ContentCubit, ContentState>(
       buildWhen: (previous, current) => current is ContentStates,
@@ -55,8 +67,7 @@ class _ContentFormState extends State<ContentForm> {
               backgroundColor: kBackgroundColor,
               body: Stack(
                 children: [
-                  ValueListenableBuilder<AdmobAdEvent>(
-                    valueListenable: admobEvemt,
+                  Positioned.fill(
                     child: SliverFab(
                       expandedHeight: 200,
                       floatingPosition: FloatingPosition(
@@ -75,7 +86,20 @@ class _ContentFormState extends State<ContentForm> {
                             return FloatingActionButton(
                               elevation: 2,
                               highlightElevation: 4,
-                              onPressed: () {
+                              onPressed: () async {
+                                if (context
+                                    .read<GlobalSettingsBloc>()
+                                    .state
+                                    .adsEnabled) {
+                                  if (context.read<InterstitialBloc>().state
+                                      is AdLoaded) {
+                                    await context
+                                        .read<InterstitialBloc>()
+                                        .showAd();
+                                  }
+
+                                  //todo show interstitial
+                                }
                                 Navigator.of(context)
                                     .push(PlayerPage.route(state.content));
                               },
@@ -331,28 +355,19 @@ class _ContentFormState extends State<ContentForm> {
                         ),
                       ],
                     ),
-                    builder: (context, event, child) {
-                      return Positioned.fill(
-                        child: child,
-                        bottom: event == AdmobAdEvent.failedToLoad ||
-                                event == AdmobAdEvent.closed
-                            ? 0
-                            : 50,
-                      );
-                    },
+                    bottom: 50,
                   ),
                   if (setting.adsEnabled)
                     Positioned(
                       bottom: 0,
                       right: 0,
                       left: 0,
-                      child: AdmobBanner(
-                        listener: (event, listener) {
-                          admobEvemt.value = event;
-                          print(event);
-                        },
-                        adUnitId: getBannerAdUnitId(),
-                        adSize: AdmobBannerSize.BANNER,
+                      child: SizedBox(
+                        width: myBanner.size.width.toDouble(),
+                        height: myBanner.size.height.toDouble(),
+                        child: AdWidget(
+                          ad: myBanner,
+                        ),
                       ),
                     ),
                 ],

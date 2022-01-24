@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:free_movies/Content/content.dart';
-import 'package:free_movies/GlobalSettings/global_settings_bloc.dart';
-import 'package:free_movies/blocs/interstitialBloc.dart';
 import 'package:free_movies/constants/Constants.dart';
 import 'package:free_movies/home/model/home_response.dart' as resopnse;
 import 'package:page_indicator/page_indicator.dart';
-import 'package:provider/provider.dart';
 
 class SliderMovies extends StatefulWidget {
   resopnse.HomeResponse response;
@@ -77,17 +74,6 @@ class _SliderMoviesState extends State<SliderMovies> {
                       splashRadius: 30,
                       iconSize: 40,
                       onPressed: () {
-                        if (context
-                            .read<GlobalSettingsBloc>()
-                            .state
-                            .adsEnabled) {
-                          if (context.read<InterstitialBloc>().state
-                              is AdLoaded) {
-                            context.read<InterstitialBloc>().showAd();
-                          }
-
-                          //todo show interstitial
-                        }
                         Navigator.of(context)
                             .push(ContentPage.route(contents[index]));
                       },

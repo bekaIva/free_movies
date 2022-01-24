@@ -260,8 +260,10 @@ class _PlayerControlsState extends State<PlayerControls>
                     right: 0,
                     bottom: 0,
                     left: 0,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(kYelowTitleColor),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(kYelowTitleColor),
+                      ),
                     )),
               Positioned(
                 child: Container(padding: EdgeInsets.only(top: 8),

@@ -44,10 +44,18 @@ class _MyAppViewState extends State<MyAppView> {
   NavigatorState get _navigator => _navigatorKey.currentState;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HomePage(),
-      navigatorKey: _navigatorKey,
-    );
+    return BlocListener<InterstitialBloc, InterstitialState>(
+        listener: (context, state) {
+          print(state);
+          if (state == null &&
+              (context.read<GlobalSettingsBloc>().state?.adsEnabled ?? false)) {
+            context.read<InterstitialBloc>().load();
+          }
+        },
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: HomePage(),
+          navigatorKey: _navigatorKey,
+        ));
   }
 }

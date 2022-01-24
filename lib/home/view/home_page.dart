@@ -2,7 +2,6 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:free_movies/AdmobExtensions/AdmobExtensions.dart';
 import 'package:free_movies/AllMoviesPage/AllMoviesPage.dart';
 import 'package:free_movies/AllTvShowsPage/all_tv_shows_page.dart';
 import 'package:free_movies/Api/TubiApi.dart';
@@ -13,6 +12,8 @@ import 'package:free_movies/home/bloc/home_page_bloc.dart';
 import 'package:free_movies/home/bloc/search_bloc/search_bloc.dart';
 import 'package:free_movies/home/view/SearchDelegate.dart';
 import 'package:free_movies/home/view/widgets/home_widget.dart';
+import 'package:free_movies/main.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class HomePage extends StatefulWidget {
   static Route route() => MaterialPageRoute(
@@ -24,6 +25,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final BannerAd myBanner = BannerAd(
+    adUnitId: getBannerAdUnitId(),
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
   int bottomNavigationIndex = 0;
   PageController _pageController = PageController(
     initialPage: 0,
@@ -32,6 +39,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    myBanner.load();
     // TODO: implement initState
     super.initState();
   }
@@ -39,6 +47,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _bloc.close();
+    myBanner.dispose();
     // TODO: implement dispose
     super.dispose();
   }
@@ -47,24 +56,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocBuilder<GlobalSettingsBloc, GlobalSetting>(
       builder: (context, state) {
-        AppBar appbar = AppBar(
-          backgroundColor: kLigthBackgroundColor,
-          title: Text(
-            indexToAppbarName(bottomNavigationIndex),
-          ),
-          actions: [
-            IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  showSearch(
-                    context: context,
-                    delegate: HomeSearchDelegate(
-                      context.read<SearchBloc>(),
-                    ),
-                  );
-                }),
-          ],
-        );
         return WillPopScope(
           onWillPop: () async {
             if (bottomNavigationIndex > 0) {
@@ -77,9 +68,24 @@ class _HomePageState extends State<HomePage> {
           },
           child: Scaffold(
             backgroundColor: kLigthBackgroundColor,
-            appBar: state?.adsEnabled ?? false
-                ? appbar.withBottomAdmobBanner(context)
-                : appbar,
+            appBar: AppBar(
+              backgroundColor: kLigthBackgroundColor,
+              title: Text(
+                indexToAppbarName(bottomNavigationIndex),
+              ),
+              actions: [
+                IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      showSearch(
+                        context: context,
+                        delegate: HomeSearchDelegate(
+                          context.read<SearchBloc>(),
+                        ),
+                      );
+                    }),
+              ],
+            ),
             bottomNavigationBar: Theme(
               data: Theme.of(context)
                   .copyWith(canvasColor: kLigthBackgroundColor),
@@ -104,28 +110,45 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            body: PageView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              onPageChanged: (value) {
-                setState(() {
-                  bottomNavigationIndex = value;
-                });
-              },
+            body: Column(
               children: [
-                MultiBlocProvider(providers: [
-                  BlocProvider(
-                    create: (context) => HomePageBloc(context.read<TubiApi>()),
+                Expanded(
+                  child: PageView(
+                    physics: NeverScrollableScrollPhysics(),
+                    controller: _pageController,
+                    onPageChanged: (value) {
+                      setState(() {
+                        bottomNavigationIndex = value;
+                      });
+                    },
+                    children: [
+                      MultiBlocProvider(providers: [
+                        BlocProvider(
+                          create: (context) =>
+                              HomePageBloc(context.read<TubiApi>()),
+                        ),
+                      ], child: HomeWidget()),
+                      BlocProvider(
+                        create: (context) =>
+                            MoviesListBloc(context.read<TubiApi>()),
+                        child: AllMoviesPage(),
+                      ),
+                      BlocProvider(
+                        create: (context) =>
+                            MoviesListBloc(context.read<TubiApi>()),
+                        child: AllTvShowsPage(),
+                      ),
+                    ],
                   ),
-                ], child: HomeWidget()),
-                BlocProvider(
-                  create: (context) => MoviesListBloc(context.read<TubiApi>()),
-                  child: AllMoviesPage(),
                 ),
-                BlocProvider(
-                  create: (context) => MoviesListBloc(context.read<TubiApi>()),
-                  child: AllTvShowsPage(),
-                ),
+                if (state.adsEnabled)
+                  SizedBox(
+                    height: myBanner.size.height.toDouble(),
+                    width: myBanner.size.width.toDouble(),
+                    child: AdWidget(
+                      ad: myBanner,
+                    ),
+                  )
               ],
             ),
           ),

@@ -1,7 +1,7 @@
-import 'package:admob_flutter/admob_flutter.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:free_movies/main.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 abstract class InterstitialState {}
 
@@ -10,46 +10,45 @@ class AdLoaded extends InterstitialState {}
 class AdOpened extends InterstitialState {}
 
 class InterstitialBloc extends Cubit<InterstitialState> {
-  AdmobInterstitial interstitialAd;
+  InterstitialAd _interstitialAd;
   InterstitialBloc() : super(null) {
-    interstitialAd = AdmobInterstitial(
-      adUnitId: getInterstitialAdUnitId(),
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        if (event == AdmobAdEvent.closed) interstitialAd.load();
-        handleEvent(event, args, 'Interstitial');
-      },
-    );
-    interstitialAd.load();
+    load();
   }
   Future<void> showAd() async {
-    if (await interstitialAd.isLoaded) {
-      interstitialAd.show();
-    }
-  }
-
-  void handleEvent(
-      AdmobAdEvent event, Map<String, dynamic> args, String adType) {
-    print(event);
-    switch (event) {
-      case AdmobAdEvent.loaded:
-        emit(AdLoaded());
-        break;
-      case AdmobAdEvent.opened:
-        emit(AdOpened());
-        break;
-      case AdmobAdEvent.closed:
-        break;
-      case AdmobAdEvent.failedToLoad:
-        break;
-      default:
-    }
-    load();
+    _interstitialAd?.show();
   }
 
   Future<void> load() async {
-    await Future.delayed(Duration(milliseconds: 400));
-    if (!await interstitialAd.isLoaded) {
-      interstitialAd.load();
-    }
+    await InterstitialAd.load(
+        adUnitId: getInterstitialAdUnitId(),
+        request: AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            // Keep a reference to the ad so you can show it later.
+            this._interstitialAd = ad;
+            _interstitialAd.fullScreenContentCallback =
+                FullScreenContentCallback(
+                    onAdShowedFullScreenContent: (InterstitialAd ad) {
+              print('%ad onAdShowedFullScreenContent.');
+              emit(null);
+            }, onAdDismissedFullScreenContent: (InterstitialAd ad) {
+              print('$ad onAdDismissedFullScreenContent.');
+              _interstitialAd.dispose();
+              emit(null);
+            }, onAdFailedToShowFullScreenContent:
+                        (InterstitialAd ad, AdError error) {
+              print('$ad onAdFailedToShowFullScreenContent: $error');
+              _interstitialAd.dispose();
+              emit(null);
+            }, onAdImpression: (InterstitialAd ad) {
+              print('$ad impression occurred.');
+              emit(null);
+            });
+            emit(AdLoaded());
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error');
+          },
+        ));
   }
 }
